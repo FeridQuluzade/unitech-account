@@ -1,10 +1,10 @@
 package az.unitech.development.account.controller;
 
-import az.unitech.development.account.dto.TransferCreateDto;
-import az.unitech.development.account.model.Account;
-import az.unitech.development.account.repository.AccountRepository;
+import az.unitech.development.account.dto.request.TransferCreateRequest;
+import az.unitech.development.account.dto.response.AccountResponse;
 import az.unitech.development.account.service.AccountService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,10 +20,15 @@ public class AccountController {
 
     private final AccountService accountService;
 
+    @GetMapping
+    public AccountResponse getAllActiveAccountsByCustomerId(@RequestParam Long customerId) {
+        return accountService.getActiveAccountsByCustomerId(customerId);
+    }
+
     @PostMapping("/transfer")
     public void makeTransfer(@RequestParam Long customerId,
-                             @Valid @RequestBody TransferCreateDto transferCreateDto) {
-        accountService.makeTransfer(customerId, transferCreateDto);
+                             @Valid @RequestBody TransferCreateRequest transferCreateRequest) {
+        accountService.makeTransfer(customerId, transferCreateRequest);
     }
 
 }
