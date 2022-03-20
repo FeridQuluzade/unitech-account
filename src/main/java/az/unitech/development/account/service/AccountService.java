@@ -1,8 +1,11 @@
 package az.unitech.development.account.service;
 
-import az.unitech.development.account.dto.TransferCreateDto;
+import az.unitech.development.account.dto.AccountDto;
+import az.unitech.development.account.dto.request.TransferCreateRequest;
+import az.unitech.development.account.dto.response.AccountResponse;
 import az.unitech.development.account.exception.ErrorCodes;
 import az.unitech.development.account.exception.ServiceException;
+import az.unitech.development.account.mapper.AccountMapper;
 import az.unitech.development.account.model.Account;
 import az.unitech.development.account.model.AccountStatus;
 import az.unitech.development.account.repository.AccountRepository;
@@ -11,22 +14,30 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class AccountService {
 
     private final AccountRepository accountRepository;
+    private final AccountMapper accountMapper;
+
+    public AccountResponse getActiveAccountsByCustomerId(Long customerId) {
+        List<AccountDto> accountDtoList = accountMapper.toAccountDtoList(
+                accountRepository.findByCustomerIdAndStatus(customerId, AccountStatus.ACTIVE));
+        return AccountResponse.of(accountDtoList);
+    }
 
     @Transactional
-    public void makeTransfer(Long customerId, TransferCreateDto transferCreateDto) {
-        throwIfFromAccountAndToAccountIsSame(transferCreateDto.isSameAccount());
+    public void makeTransfer(Long customerId, TransferCreateRequest transferCreateRequest) {
+        throwIfFromAccountAndToAccountIsSame(transferCreateRequest.isSameAccount());
         Account fromAccount =
-                getOrElseThrowFromAccount(customerId, transferCreateDto.getFromAccountNumber());
-        Account toAccount = getOrElseThrowToAccount(transferCreateDto.getToAccountNumber());
-        throwIfAmountExceedFromAccountAmount(transferCreateDto.getAmount(), fromAccount);
+                getOrElseThrowFromAccount(customerId, transferCreateRequest.getFromAccountNumber());
+        Account toAccount = getOrElseThrowToAccount(transferCreateRequest.getToAccountNumber());
+        throwIfAmountExceedFromAccountAmount(transferCreateRequest.getAmount(), fromAccount);
         throwIfAccountClosed(toAccount);
-        successTransfer(fromAccount, toAccount, transferCreateDto.getAmount());
+        successTransfer(fromAccount, toAccount, transferCreateRequest.getAmount());
     }
 
     private void throwIfFromAccountAndToAccountIsSame(boolean status) {

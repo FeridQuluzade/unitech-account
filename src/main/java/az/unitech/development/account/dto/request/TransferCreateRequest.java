@@ -1,4 +1,4 @@
-package az.unitech.development.account.dto;
+package az.unitech.development.account.dto.request;
 
 import az.unitech.development.account.exception.validation.ErrorMessages;
 import lombok.Data;
@@ -8,7 +8,7 @@ import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 
 @Data
-public class TransferCreateDto {
+public class TransferCreateRequest {
 
     @NotBlank(message = ErrorMessages.FROM_ACCOUNT_NUMBER_NOT_DEFINED)
     private String fromAccountNumber;
