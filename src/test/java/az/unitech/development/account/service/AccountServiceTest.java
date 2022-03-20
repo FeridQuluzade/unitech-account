@@ -1,10 +1,12 @@
 package az.unitech.development.account.service;
 
 import az.unitech.development.account.dto.AccountDto;
+import az.unitech.development.account.dto.TransferStatus;
 import az.unitech.development.account.dto.request.TransferCreateRequest;
 import az.unitech.development.account.dto.response.AccountResponse;
-import az.unitech.development.account.exception.ErrorCodes;
-import az.unitech.development.account.exception.ServiceException;
+import az.unitech.development.account.dto.response.TransferResponse;
+import az.unitech.development.account.error.ErrorCodes;
+import az.unitech.development.account.error.ServiceException;
 import az.unitech.development.account.mapper.AccountMapper;
 import az.unitech.development.account.model.Account;
 import az.unitech.development.account.model.AccountStatus;
@@ -56,10 +58,10 @@ class AccountServiceTest {
 
         var actual = accountService.getActiveAccountsByCustomerId(CUSTOMER_ID);
 
-        assertEquals(expected,actual);
-        verify(accountRepository,times(1))
+        assertEquals(expected, actual);
+        verify(accountRepository, times(1))
                 .findByCustomerIdAndStatus(CUSTOMER_ID, AccountStatus.ACTIVE);
-        verify(accountMapper,times(1))
+        verify(accountMapper, times(1))
                 .toAccountDtoList(accounts);
     }
 
@@ -198,12 +200,17 @@ class AccountServiceTest {
         fromAccount.setAmount(fromAccount.getAmount().subtract(transferCreateRequest.getAmount()));
         toAccount.setAmount(fromAccount.getAmount().add(transferCreateRequest.getAmount()));
 
+        var expected = TransferResponse.of(
+                TransferStatus.COMPLETED, "Transfer successfully completed !");
+
         when(accountRepository.findByAccountNumberAndCustomerId(FROM_ACCOUNT_NUMBER, CUSTOMER_ID))
                 .thenReturn(Optional.of(fromAccount));
         when(accountRepository.findByAccountNumber(TO_ACCOUNT_NUMBER))
                 .thenReturn(Optional.of(toAccount));
 
-        accountService.makeTransfer(CUSTOMER_ID, transferCreateRequest);
+        var actual = accountService.makeTransfer(CUSTOMER_ID, transferCreateRequest);
+
+        assertEquals(expected.getStatus(), actual.getStatus());
         verify(accountRepository, times(1))
                 .findByAccountNumberAndCustomerId(FROM_ACCOUNT_NUMBER, CUSTOMER_ID);
         verify(accountRepository, times(1))

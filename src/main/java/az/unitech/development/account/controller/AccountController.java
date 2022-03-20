@@ -2,6 +2,7 @@ package az.unitech.development.account.controller;
 
 import az.unitech.development.account.dto.request.TransferCreateRequest;
 import az.unitech.development.account.dto.response.AccountResponse;
+import az.unitech.development.account.dto.response.TransferResponse;
 import az.unitech.development.account.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,9 +27,9 @@ public class AccountController {
     }
 
     @PostMapping("/transfer")
-    public void makeTransfer(@RequestParam Long customerId,
-                             @Valid @RequestBody TransferCreateRequest transferCreateRequest) {
-        accountService.makeTransfer(customerId, transferCreateRequest);
+    public TransferResponse makeTransfer(@RequestParam Long customerId,
+                                         @Valid @RequestBody TransferCreateRequest request) {
+        return accountService.makeTransfer(customerId, request);
     }
 
 }
