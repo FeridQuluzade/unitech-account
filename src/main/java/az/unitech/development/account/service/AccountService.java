@@ -39,7 +39,7 @@ public class AccountService {
     private Account getOrElseThrowFromAccount(Long customerId, String fromAccountNumber) {
         return accountRepository.findByAccountNumberAndCustomerId(fromAccountNumber, customerId)
                 .orElseThrow(() -> ServiceException.of(ErrorCodes.ACCOUNT_NOT_FOUND,
-                        "Account not found, accountNumber: " + fromAccountNumber));
+                        "The account is not yours, customerId: " + customerId));
     }
 
     private Account getOrElseThrowToAccount(String toAccountNumber) {
