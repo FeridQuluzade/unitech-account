@@ -19,17 +19,11 @@ import javax.validation.Valid;
 public class AccountController {
 
     private final AccountService accountService;
-    private final AccountRepository accountRepository;
 
     @PostMapping("/transfer")
     public void makeTransfer(@RequestParam Long customerId,
                              @Valid @RequestBody TransferCreateDto transferCreateDto) {
         accountService.makeTransfer(customerId, transferCreateDto);
-    }
-
-    @PostMapping
-    public Account createAccount(@RequestBody Account account) {
-        return accountRepository.save(account);
     }
 
 }

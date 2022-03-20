@@ -5,12 +5,12 @@ spring:
     basename: i18n/messages
     encoding: UTF-8
   datasource:
-    url: jdbc:mysql://localhost:3306/ced
-    username: root
-    password: Buster
+    url: jdbc:postgresql://localhost:5432/unitech
+    username: postgres
+    password: Pass1234
   jpa:
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQL57InnoDBDialect
+        dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update

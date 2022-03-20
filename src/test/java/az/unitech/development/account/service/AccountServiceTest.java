@@ -24,9 +24,9 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class AccountServiceTest {
 
-    public static final Long CUSTOMER_ID = 1L;
-    public static final String TO_ACCOUNT_NUMBER = "c29c08f1-505d-4452-81e2-9192beb6bad0";
-    public static final String FROM_ACCOUNT_NUMBER = "3a7d1f5d-5b4e-48a6-945d-6c2db7925fd6";
+    private static final Long CUSTOMER_ID = 1L;
+    private static final String TO_ACCOUNT_NUMBER = "c29c08f1-505d-4452-81e2-9192beb6bad0";
+    private static final String FROM_ACCOUNT_NUMBER = "3a7d1f5d-5b4e-48a6-945d-6c2db7925fd6";
 
     @Mock
     private AccountRepository accountRepository;
@@ -53,7 +53,7 @@ class AccountServiceTest {
         transferCreateDto.setFromAccountNumber(FROM_ACCOUNT_NUMBER);
 
         when(accountRepository.findByAccountNumberAndCustomerId(
-                transferCreateDto.getFromAccountNumber(), 1L))
+                transferCreateDto.getFromAccountNumber(), CUSTOMER_ID))
                 .thenReturn(Optional.empty());
 
         ServiceException serviceException = assertThrows(ServiceException.class,
@@ -62,7 +62,7 @@ class AccountServiceTest {
         Assertions.assertEquals(
                 ErrorCodes.ACCOUNT_NOT_FOUND.code(), serviceException.getErrorCode());
         verify(accountRepository, times(1))
-                .findByAccountNumberAndCustomerId(FROM_ACCOUNT_NUMBER, 1L);
+                .findByAccountNumberAndCustomerId(FROM_ACCOUNT_NUMBER, CUSTOMER_ID);
     }
 
     @Test
@@ -72,7 +72,7 @@ class AccountServiceTest {
         transferCreateDto.setFromAccountNumber(FROM_ACCOUNT_NUMBER);
 
         when(accountRepository.findByAccountNumberAndCustomerId(
-                transferCreateDto.getFromAccountNumber(), 1L))
+                transferCreateDto.getFromAccountNumber(), CUSTOMER_ID))
                 .thenReturn(Optional.of(new Account()));
         when(accountRepository.findByAccountNumber(transferCreateDto.getToAccountNumber()))
                 .thenReturn(Optional.empty());
@@ -83,7 +83,7 @@ class AccountServiceTest {
         Assertions.assertEquals(
                 ErrorCodes.ACCOUNT_NOT_FOUND.code(), serviceException.getErrorCode());
         verify(accountRepository, times(1))
-                .findByAccountNumberAndCustomerId(FROM_ACCOUNT_NUMBER, 1L);
+                .findByAccountNumberAndCustomerId(FROM_ACCOUNT_NUMBER, CUSTOMER_ID);
         verify(accountRepository, times(1))
                 .findByAccountNumber(TO_ACCOUNT_NUMBER);
     }
@@ -143,6 +143,38 @@ class AccountServiceTest {
 
         Assertions.assertEquals(
                 ErrorCodes.ACCOUNT_STATUS_CLOSED.code(), serviceException.getErrorCode());
+        verify(accountRepository, times(1))
+                .findByAccountNumberAndCustomerId(FROM_ACCOUNT_NUMBER, CUSTOMER_ID);
+        verify(accountRepository, times(1))
+                .findByAccountNumber(TO_ACCOUNT_NUMBER);
+    }
+
+    @Test
+    void makeTransfer_Success() {
+        var transferCreateDto = new TransferCreateDto();
+        transferCreateDto.setFromAccountNumber(FROM_ACCOUNT_NUMBER);
+        transferCreateDto.setToAccountNumber(TO_ACCOUNT_NUMBER);
+        transferCreateDto.setAmount(BigDecimal.valueOf(200));
+
+        var fromAccount = new Account();
+        fromAccount.setCustomerId(CUSTOMER_ID);
+        fromAccount.setAccountNumber(FROM_ACCOUNT_NUMBER);
+        fromAccount.setAmount(BigDecimal.valueOf(400));
+
+        var toAccount = new Account();
+        toAccount.setAccountNumber(TO_ACCOUNT_NUMBER);
+        toAccount.setStatus(AccountStatus.ACTIVE);
+        toAccount.setAmount(BigDecimal.valueOf(0));
+
+        fromAccount.setAmount(fromAccount.getAmount().subtract(transferCreateDto.getAmount()));
+        toAccount.setAmount(fromAccount.getAmount().add(transferCreateDto.getAmount()));
+
+        when(accountRepository.findByAccountNumberAndCustomerId(FROM_ACCOUNT_NUMBER, CUSTOMER_ID))
+                .thenReturn(Optional.of(fromAccount));
+        when(accountRepository.findByAccountNumber(TO_ACCOUNT_NUMBER))
+                .thenReturn(Optional.of(toAccount));
+
+        accountService.makeTransfer(CUSTOMER_ID, transferCreateDto);
         verify(accountRepository, times(1))
                 .findByAccountNumberAndCustomerId(FROM_ACCOUNT_NUMBER, CUSTOMER_ID);
         verify(accountRepository, times(1))

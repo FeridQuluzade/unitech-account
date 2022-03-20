@@ -29,7 +29,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation:2.6.4'
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
     implementation "javax.validation:validation-api:${javaxValidationVersion}"
-    implementation 'mysql:mysql-connector-java:8.0.28'
+    implementation 'org.postgresql:postgresql:42.3.3'
     compileOnly 'org.projectlombok:lombok'
     implementation "org.mapstruct:mapstruct:${mapstructVersion}"
     annotationProcessor 'org.projectlombok:lombok'
