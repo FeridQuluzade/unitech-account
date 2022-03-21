@@ -1,4 +1,4 @@
-package az.unitech.development.account.exception;
+package az.unitech.development.account.error;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

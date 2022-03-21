@@ -1,7 +1,6 @@
 package az.unitech.development.account.dto.response;
 
 import az.unitech.development.account.dto.AccountDto;
-import az.unitech.development.account.model.Account;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

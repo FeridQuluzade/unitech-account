@@ -4,4 +4,4 @@
 '  ''  ' |  ||  | |  |   |  |   \   --. \ `--. |  | |  |         \ '-'  | \ `--. \ `--. ' '-' ' '  ''  ' |  ||  |   |  |
  `----'  `--''--' `--'   `--'    `----'  `---' `--' `--'          `--`--'  `---'  `---'  `---'   `----'  `--''--'   `--'
 
-${AnsiColor.YELLOW}:: Kapital Bank  :: Running Spring Boot ${spring-boot.version} ::
+${AnsiColor.YELLOW}:: Unitech  :: Running Spring Boot ${spring-boot.version} ::

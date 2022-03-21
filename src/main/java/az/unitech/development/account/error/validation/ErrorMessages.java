@@ -1,4 +1,4 @@
-package az.unitech.development.account.exception.validation;
+package az.unitech.development.account.error.validation;
 
 public final class ErrorMessages {
 

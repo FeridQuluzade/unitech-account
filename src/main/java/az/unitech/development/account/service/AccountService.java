@@ -1,10 +1,12 @@
 package az.unitech.development.account.service;
 
 import az.unitech.development.account.dto.AccountDto;
+import az.unitech.development.account.dto.TransferStatus;
 import az.unitech.development.account.dto.request.TransferCreateRequest;
 import az.unitech.development.account.dto.response.AccountResponse;
-import az.unitech.development.account.exception.ErrorCodes;
-import az.unitech.development.account.exception.ServiceException;
+import az.unitech.development.account.dto.response.TransferResponse;
+import az.unitech.development.account.error.ErrorCodes;
+import az.unitech.development.account.error.ServiceException;
 import az.unitech.development.account.mapper.AccountMapper;
 import az.unitech.development.account.model.Account;
 import az.unitech.development.account.model.AccountStatus;
@@ -30,14 +32,14 @@ public class AccountService {
     }
 
     @Transactional
-    public void makeTransfer(Long customerId, TransferCreateRequest transferCreateRequest) {
-        throwIfFromAccountAndToAccountIsSame(transferCreateRequest.isSameAccount());
+    public TransferResponse makeTransfer(Long customerId, TransferCreateRequest request) {
+        throwIfFromAccountAndToAccountIsSame(request.isSameAccount());
         Account fromAccount =
-                getOrElseThrowFromAccount(customerId, transferCreateRequest.getFromAccountNumber());
-        Account toAccount = getOrElseThrowToAccount(transferCreateRequest.getToAccountNumber());
-        throwIfAmountExceedFromAccountAmount(transferCreateRequest.getAmount(), fromAccount);
+                getOrElseThrowFromAccount(customerId, request.getFromAccountNumber());
+        Account toAccount = getOrElseThrowToAccount(request.getToAccountNumber());
+        throwIfAmountExceedFromAccountAmount(request.getAmount(), fromAccount);
         throwIfAccountClosed(toAccount);
-        successTransfer(fromAccount, toAccount, transferCreateRequest.getAmount());
+        return successTransfer(fromAccount, toAccount, request.getAmount());
     }
 
     private void throwIfFromAccountAndToAccountIsSame(boolean status) {
@@ -68,15 +70,20 @@ public class AccountService {
 
     private void throwIfAccountClosed(Account account) {
         if (account.getStatus().equals(AccountStatus.CLOSED)) {
-            throw ServiceException.of(ErrorCodes.ACCOUNT_STATUS_CLOSED, "Account closed !");
+            throw ServiceException.of(
+                    ErrorCodes.ACCOUNT_STATUS_CLOSED,
+                    "Account closed, accountNumber: " + account.getAccountNumber());
         }
     }
 
-    private void successTransfer(Account fromAccount, Account toAccount, BigDecimal amount) {
+    private TransferResponse successTransfer(
+            Account fromAccount, Account toAccount, BigDecimal amount) {
         fromAccount.setAmount(fromAccount.getAmount().subtract(amount));
         accountRepository.save(fromAccount);
         toAccount.setAmount(toAccount.getAmount().add(amount));
         accountRepository.save(toAccount);
+        return TransferResponse.of(
+                TransferStatus.COMPLETED, "Transfer successfully completed !");
     }
 
 }

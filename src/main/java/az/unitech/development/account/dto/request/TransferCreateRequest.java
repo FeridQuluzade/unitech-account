@@ -1,10 +1,10 @@
 package az.unitech.development.account.dto.request;
 
-import az.unitech.development.account.exception.validation.ErrorMessages;
+import az.unitech.development.account.error.validation.ErrorMessages;
 import lombok.Data;
 
-import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
 
 @Data
@@ -16,7 +16,7 @@ public class TransferCreateRequest {
     @NotBlank(message = ErrorMessages.TO_ACCOUNT_NUMBER_NOT_DEFINED)
     private String toAccountNumber;
 
-    @DecimalMin(value = "0.0", inclusive = false, message = ErrorMessages.INVALID_AMOUNT)
+    @Positive(message = ErrorMessages.INVALID_AMOUNT)
     private BigDecimal amount;
 
     public boolean isSameAccount() {

@@ -1,4 +1,4 @@
-package az.unitech.development.account.exception;
+package az.unitech.development.account.error;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
@@ -40,11 +40,10 @@ public class CommonErrorHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({ServiceException.class})
     public RestErrorResponse handleServiceExceptions(ServiceException ex) {
         log.error("Service error, uuid: {}, code: {}, message: {}, {}",
-                ex.getErrorUuid(), ex.getErrorCode(), ex.getErrorMessage(), ex.formatProperties());
+                ex.getErrorUuid(), ex.getErrorCode(), ex.getErrorMessage());
         return new RestErrorResponse(ex.getErrorUuid(),
                 ex.getErrorCode(),
-                ex.getErrorMessage(),
-                ex.getProperties());
+                ex.getErrorMessage());
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
