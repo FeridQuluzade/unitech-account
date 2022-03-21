@@ -8,8 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
@@ -22,12 +22,13 @@ public class AccountController {
     private final AccountService accountService;
 
     @GetMapping
-    public AccountResponse getAllActiveAccountsByCustomerId(@RequestParam Long customerId) {
+    public AccountResponse getAllActiveAccountsByCustomerId(
+            @RequestHeader(name = "Customer-Id") Long customerId) {
         return accountService.getActiveAccountsByCustomerId(customerId);
     }
 
     @PostMapping("/transfer")
-    public TransferResponse makeTransfer(@RequestParam Long customerId,
+    public TransferResponse makeTransfer(@RequestHeader(name = "Customer-Id") Long customerId,
                                          @Valid @RequestBody TransferCreateRequest request) {
         return accountService.makeTransfer(customerId, request);
     }
