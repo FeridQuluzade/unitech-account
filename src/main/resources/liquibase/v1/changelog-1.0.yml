@@ -1,0 +1,31 @@
+databaseChangeLog:
+  - changeSet:
+      id: Create Accounts table
+      author: Ferid Quluzade
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  name: account_number
+                  type: varchar(64)
+                  constraints:
+                    primaryKey: true
+                    unique: true
+                    nullable: true
+              - column:
+                  name: customer_id
+                  type: bigint
+              - column:
+                  name: amount
+                  type: decimal
+              - column:
+                  name: status
+                  type: varchar(32)
+              - column:
+                  name: created_at
+                  type: timestamp
+              - column:
+                  name: updated_at
+                  type: timestamp
+            schemaName: public
+            tableName: accounts
